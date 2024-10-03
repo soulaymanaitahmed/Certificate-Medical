@@ -2,7 +2,9 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import axios from "axios";
+import { AutoComplete, Input } from "antd";
 
+import exportToExcel from "../exportToExcel";
 import AjouterImg from "../AjouterImg";
 import Ajouter from "../Ajouter";
 import Header from "../Header";
@@ -15,6 +17,13 @@ import vvw from "../Images/research.png";
 function Add() {
   const currentYear = new Date().getFullYear();
   const [annee, setAnnee] = useState(currentYear);
+
+  const [spds, setSpds] = useState([]);
+  const [mts, setMts] = useState([]);
+  const [provs, setProvs] = useState([]);
+  const [spdsInput, setSpdsInput] = useState("");
+  const [mtsInput, setMtsInput] = useState("");
+  const [provInput, setProvInput] = useState("");
 
   useEffect(() => {
     fetchUserCertif();
@@ -64,7 +73,7 @@ function Add() {
   const [fait, setFait] = useState("");
   const [resultat, setResultat] = useState("");
   const [explication, setExplication] = useState("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState("10");
   const [duree, setDuree] = useState(null);
   const [view, setView] = useState(0);
 
@@ -86,7 +95,10 @@ function Add() {
     fetchPatient();
     fetchImages();
     fetchUseryears();
+    fetchProvs();
     fetchActive();
+    fetchSpds();
+    fetchMts();
   }, []);
 
   const fetchActive = async () => {
@@ -220,8 +232,30 @@ function Add() {
 
     return formattedDate.replace(",", "");
   }
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
+      if (
+        spdsInput &&
+        !spds.some((spd) => spd.spd.toLowerCase() === spdsInput.toLowerCase())
+      ) {
+        await axios.post(`${baseURL}/spds`, { spd: spdsInput });
+      }
+
+      if (
+        mtsInput &&
+        !mts.some((mt) => mt.mt.toLowerCase() === mtsInput.toLowerCase())
+      ) {
+        await axios.post(`${baseURL}/mts`, { mt: mtsInput });
+      }
+
+      if (
+        provInput &&
+        !provs.some((mt) => mt.prov.toLowerCase() === provInput.toLowerCase())
+      ) {
+        await axios.post(`${baseURL}/provs`, { prov: provInput });
+      }
+
       const id = spesificCertif.id;
       const updatedUserData = {
         contreVisit,
@@ -229,8 +263,12 @@ function Add() {
         fait,
         resultat,
         explication,
-        type,
+        type: resultat !== "1" ? 10 : type,
+        spdsInput,
+        mtsInput,
+        provInput,
       };
+
       await axios.put(`${baseURL}/certificate/${id}`, updatedUserData);
       window.location.reload();
       console.log("Certif Updated");
@@ -238,6 +276,7 @@ function Add() {
       console.error("Error updating certif:", error);
     }
   };
+
   const handleDelete = async (e) => {
     e.preventDefault();
     try {
@@ -261,6 +300,50 @@ function Add() {
       console.error("Error deleting Img:", error);
     }
   };
+
+  const handleSearch = (value) => {
+    return spds
+      .filter((spd) => spd.spd.toLowerCase().includes(value.toLowerCase()))
+      .map((spd) => ({ value: spd.spd }));
+  };
+  const handleSearch2 = (value) => {
+    return mts
+      .filter((m) => m.mt.toLowerCase().includes(value.toLowerCase()))
+      .map((m) => ({ value: m.mt }));
+  };
+  const handleSearch3 = (value) => {
+    return provs
+      .filter((m) => m.prov.toLowerCase().includes(value.toLowerCase()))
+      .map((m) => ({ value: m.prov }));
+  };
+
+  const fetchSpds = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/spds`, {
+        withCredentials: true,
+      });
+      setSpds(response.data);
+    } catch (error) {}
+  };
+  const fetchMts = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/mts`, {
+        withCredentials: true,
+      });
+      setMts(response.data);
+    } catch (error) {}
+  };
+  const fetchProvs = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/provs`, {
+        withCredentials: true,
+      });
+      setProvs(response.data);
+    } catch (error) {}
+  };
+
+  console.log(userCertif);
+
   if (loading) {
     return (
       <div className="loading">
@@ -321,7 +404,7 @@ function Add() {
                         hasActiveCertifToday() === true
                           ? { backgroundColor: "green" }
                           : hasActiveCertifToday() === false
-                          ? { backgroundColor: "red" }
+                          ? { backgroundColor: "dimgrey" }
                           : {}
                       }
                     />
@@ -461,6 +544,18 @@ function Add() {
                           }
                         />
                       </div>
+                      <div className="inputdiv88" id="inputdiv88">
+                        <label htmlFor="spm" className="label288">
+                          Specialite medecin debut
+                        </label>
+                        <AutoComplete
+                          options={handleSearch(spdsInput)}
+                          onChange={setSpdsInput}
+                          value={spdsInput}
+                        >
+                          <Input id="addInput88" className="addInput" />
+                        </AutoComplete>
+                      </div>
                       {/* ------------------------- Details ------------------------- */}
                       <div className="inputdiv">
                         <div className="duree-cont1">
@@ -536,6 +631,18 @@ function Add() {
                               }}
                             />
                           </div>
+                          <div className="inputdiv88" id="inputdiv88">
+                            <label htmlFor="spm" className="label288">
+                              Médecin traitant
+                            </label>
+                            <AutoComplete
+                              options={handleSearch2(mtsInput)}
+                              onChange={setMtsInput}
+                              value={mtsInput}
+                            >
+                              <Input id="addInput88" className="addInput" />
+                            </AutoComplete>
+                          </div>
                           <div className="inputdiv" id="duree">
                             <div className="duree-cont1">
                               <span className="qs">Fait / Non Fait :</span>
@@ -572,9 +679,9 @@ function Add() {
                           {fait === "1" ? (
                             <div className="sub">
                               <div className="inputdiv1" id="duree">
-                                <div className="duree-cont1">
+                                <div className="duree-cont1" id="ed4677">
                                   <span className="qs">Résultat :</span>
-                                  <div className="radio-inputs">
+                                  <div className="radio-inputs" id="ed65780">
                                     <label className="radio">
                                       <input
                                         type="radio"
@@ -601,62 +708,135 @@ function Add() {
                                       />
                                       <span className="na">Non Justifier</span>
                                     </label>
+                                    <label className="radio">
+                                      <input
+                                        type="radio"
+                                        name="resultat"
+                                        value={2}
+                                        checked={resultat === "2"}
+                                        onChange={(e) => {
+                                          setResultat(e.target.value);
+                                        }}
+                                        defaultChecked
+                                      />
+                                      <span className="na">
+                                        Ne s'est Présinté
+                                      </span>
+                                    </label>
+                                    <label className="radio">
+                                      <input
+                                        type="radio"
+                                        name="resultat"
+                                        value={3}
+                                        checked={resultat === "3"}
+                                        onChange={(e) => {
+                                          setResultat(e.target.value);
+                                        }}
+                                        defaultChecked
+                                      />
+                                      <span className="na">Hors délai</span>
+                                    </label>
                                   </div>
                                 </div>
                               </div>
                               {resultat === "1" ? (
-                                <div className="inputdiv1" id="duree">
-                                  <div className="duree-cont1">
-                                    <span className="qs">Type de Congé:</span>
-                                    <div className="radio-inputs">
-                                      <label className="radio">
-                                        <input
-                                          type="radio"
-                                          name="type"
-                                          value={1}
-                                          checked={type === "1"}
-                                          onChange={(e) => {
-                                            setType(e.target.value);
-                                          }}
-                                          defaultChecked
-                                        />
-                                        <span className="na">
-                                          Courte Période
-                                        </span>
-                                      </label>
-                                      <label className="radio">
-                                        <input
-                                          type="radio"
-                                          name="type"
-                                          value={2}
-                                          checked={type === "2"}
-                                          onChange={(e) => {
-                                            setType(e.target.value);
-                                          }}
-                                          defaultChecked
-                                        />
-                                        <span className="na">
-                                          Période Intermédiaire
-                                        </span>
-                                      </label>
-                                      <label className="radio">
-                                        <input
-                                          type="radio"
-                                          name="type"
-                                          value={3}
-                                          checked={type === "3"}
-                                          onChange={(e) => {
-                                            setType(e.target.value);
-                                          }}
-                                          defaultChecked
-                                        />
-                                        <span className="na">
-                                          Longue Période
-                                        </span>
-                                      </label>
+                                <>
+                                  <div className="inputdiv88" id="inputdiv88">
+                                    <span className="qs">Hors Province:</span>
+                                    <AutoComplete
+                                      options={handleSearch3(provInput)}
+                                      onChange={setProvInput}
+                                      value={provInput}
+                                    >
+                                      <Input
+                                        id="addInput88"
+                                        className="addInput"
+                                      />
+                                    </AutoComplete>
+                                  </div>
+                                  <br />
+                                  <div className="inputdiv1" id="duree">
+                                    <div className="duree-cont1" id="ed4677">
+                                      <span className="qs">Type de Congé:</span>
+                                      <div
+                                        className="radio-inputs"
+                                        id="ed65780"
+                                      >
+                                        <label className="radio">
+                                          <input
+                                            type="radio"
+                                            name="type"
+                                            value={1}
+                                            checked={type === "1"}
+                                            onChange={(e) => {
+                                              setType(e.target.value);
+                                            }}
+                                            defaultChecked
+                                          />
+                                          <span className="na">
+                                            Courte durée
+                                          </span>
+                                        </label>
+                                        <label className="radio">
+                                          <input
+                                            type="radio"
+                                            name="type"
+                                            value={2}
+                                            checked={type === "2"}
+                                            onChange={(e) => {
+                                              setType(e.target.value);
+                                            }}
+                                            defaultChecked
+                                          />
+                                          <span className="na">
+                                            Intermédiaire
+                                          </span>
+                                        </label>
+                                        <label className="radio">
+                                          <input
+                                            type="radio"
+                                            name="type"
+                                            value={3}
+                                            checked={type === "3"}
+                                            onChange={(e) => {
+                                              setType(e.target.value);
+                                            }}
+                                            defaultChecked
+                                          />
+                                          <span className="na">
+                                            Longue durée
+                                          </span>
+                                        </label>
+                                        <label className="radio">
+                                          <input
+                                            type="radio"
+                                            name="type"
+                                            value={4}
+                                            checked={type === "4"}
+                                            onChange={(e) => {
+                                              setType(e.target.value);
+                                            }}
+                                          />
+                                          <span className="na">
+                                            Accident de travail
+                                          </span>
+                                        </label>
+                                        <label className="radio">
+                                          <input
+                                            type="radio"
+                                            name="type"
+                                            value={5}
+                                            checked={type === "5"}
+                                            onChange={(e) => {
+                                              setType(e.target.value);
+                                            }}
+                                          />
+                                          <span className="na">Dérogation</span>
+                                        </label>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
+                                </>
                               ) : null}
                             </div>
                           ) : fait === "0" ? (
@@ -777,8 +957,14 @@ function Add() {
                                     <span className="jjs1">Résultat : </span>
                                     <span className="jjs2">
                                       {resultat === "1"
-                                        ? "Justifier"
-                                        : "Non Justifier"}
+                                        ? "Justifié"
+                                        : resultat === "0"
+                                        ? "Non Justifié"
+                                        : resultat === "2"
+                                        ? "Ne s'est Présenté"
+                                        : resultat === "3"
+                                        ? "Hors délai"
+                                        : null}
                                     </span>
                                   </div>
                                   {resultat === "1" ? (
@@ -788,11 +974,15 @@ function Add() {
                                       </span>
                                       <span className="jjs2">
                                         {type === "1"
-                                          ? "Courte Période"
+                                          ? "Courte Durée"
                                           : type === "2"
-                                          ? "Intermédiaire"
+                                          ? "Durée Intermédiaire"
                                           : type === "3"
-                                          ? "Longue Période"
+                                          ? "Longue Durée"
+                                          : type === "4"
+                                          ? "Accident de travail"
+                                          : type === "5"
+                                          ? "Dérogation"
                                           : null}
                                       </span>
                                     </div>
@@ -839,6 +1029,7 @@ function Add() {
                   <div className="dates">
                     <input className="date111" value={"Année"} readOnly />
                     <select
+                      id="hhbjt33"
                       className="date123"
                       onChange={(e) => setAnnee(e.target.value)}
                     >
@@ -853,6 +1044,13 @@ function Add() {
                         </option>
                       ))}
                     </select>
+                    <button
+                      id="dfjkgkj55"
+                      className="exporter"
+                      onClick={() => exportToExcel(userCertif)}
+                    >
+                      Exporter au format Excel
+                    </button>
                   </div>
                   {userCertif.length > 0 ? (
                     userCertif.map((certif, index) => {
@@ -872,6 +1070,9 @@ function Add() {
                               setDate_debut(specificCertif.date_debut);
                               setDate_depot(specificCertif.date_depot);
                               setDate_fin(specificCertif.date_fin);
+                              setSpdsInput(specificCertif.spd || "");
+                              setMtsInput(specificCertif.mt || "");
+                              setProvInput(specificCertif.prov || "");
                               setContreVisit(
                                 specificCertif.contre_visit.toString()
                               );

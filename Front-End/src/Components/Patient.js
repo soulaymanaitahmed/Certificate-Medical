@@ -18,6 +18,7 @@ function Patient() {
     nom: "",
     prenom: "",
     address: "",
+    ppr: "",
     cin: "",
     phone: "",
   });
@@ -109,6 +110,22 @@ function Patient() {
         />
         <label htmlFor="address" className="label">
           Adress
+        </label>
+      </div>
+      <div className="inputdiv">
+        <input
+          required
+          className="addInput"
+          id="ppr"
+          name="ppr"
+          type="text"
+          maxLength={10}
+          placeholder=""
+          value={formData.ppr}
+          onChange={handleChange}
+        />
+        <label htmlFor="ppr" className="label">
+          PPR
         </label>
       </div>
       <div className="inputdiv">

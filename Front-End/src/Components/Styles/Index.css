@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Handjet:wght@100..900&family=Kode+Mono:wght@400..700&family=Lexend+Exa:wght@100..900&family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Handjet:wght@100..900&family=Kode+Mono:wght@400..700&family=Lexend+Exa:wght@100..900&family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap");
 :root {
   --green: #25a158;
   --dark-blue: #09254a;
@@ -12,7 +12,9 @@
 }
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #c9d6ff;
@@ -23,7 +25,8 @@ body {
   overflow-x: hidden;
 }
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }
 button {
   cursor: pointer;
@@ -71,19 +74,18 @@ nav {
   justify-content: center;
   align-items: center;
 }
-nav >ul {
+nav > ul {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 2vw;
   height: 100%;
 }
-nav
-nav >ul,
-nav >ul >li {
+nav nav > ul,
+nav > ul > li {
   list-style: none;
 }
-nav >ul >li {
+nav > ul > li {
   position: relative;
 }
 .lnk {
@@ -109,24 +111,24 @@ nav >ul >li {
   cursor: pointer;
   padding-right: 1%;
 }
-.user >span {
+.user > span {
   color: var(--blue);
   text-transform: uppercase;
   font-size: 1rem;
   letter-spacing: 0.8px;
 }
-.user >button {
+.user > button {
   height: 40px;
   letter-spacing: 1px;
   border-radius: 10px;
   border: none;
   background-color: var(--blue);
-  color: white; 
+  color: white;
   transition: all 300ms;
   font-size: 0.8vw;
 }
-.user >button:hover {
-  background-color: var(--green);  
+.user > button:hover {
+  background-color: var(--green);
 }
 
 /* ---------------------------------------- */
@@ -165,6 +167,11 @@ nav >ul >li {
   justify-content: space-between;
   align-items: center;
 }
+#ed4677 {
+  height: fit-content;
+  margin-top: 20px;
+  align-items: flex-start;
+}
 .dur {
   outline: none;
   font-size: 1rem;
@@ -187,9 +194,20 @@ nav >ul >li {
   padding-left: 1%;
   padding-right: 1%;
 }
+#inputdiv88 {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  padding-left: 1%;
+  padding-right: 1%;
+  margin-top: 30px;
+}
 .inputdiv1 {
   width: 100%;
-  height: 60px;
+  height: fit-content;
   display: flex;
   align-items: flex-end;
   position: relative;
@@ -220,8 +238,23 @@ nav >ul >li {
   padding-right: 2%;
   background-color: var(--white);
 }
+.label288 {
+  color: rgb(24, 24, 24);
+  font-size: 1rem;
+}
 .addInput {
   outline: none;
+  font-size: 1rem;
+  height: 45px;
+  width: 100%;
+  padding-left: 5%;
+  padding-right: 3%;
+  background-color: transparent;
+  border: 1px solid rgb(147, 147, 147);
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+#addInput88 {
   font-size: 1rem;
   height: 45px;
   width: 100%;
@@ -259,7 +292,7 @@ nav >ul >li {
 /* ---------------------------------------- */
 
 .show {
-  width: 100VW;
+  width: 100vw;
   display: flex;
   justify-content: center;
   gap: 2vw;
@@ -303,6 +336,10 @@ nav >ul >li {
   box-sizing: border-box;
   font-size: 1rem;
   padding: 0.5vw;
+}
+#ed65780 {
+  flex-direction: column;
+  width: max-content;
 }
 .radio-inputs .radio {
   flex: 1 1 auto;
@@ -367,7 +404,7 @@ nav >ul >li {
   align-items: center;
   padding-top: 2vw;
 }
-.subk >button {
+.subk > button {
   width: 40%;
   height: 45px;
   border-radius: 10px;
@@ -397,7 +434,7 @@ nav >ul >li {
   border: none;
   color: white;
 }
-.subk >button:hover {
+.subk > button:hover {
   background-color: var(--green);
 }
 .users-show {
@@ -621,31 +658,39 @@ nav >ul >li {
 .search {
   width: 100%;
   box-sizing: border-box;
-  padding: 2%;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 2vw;
+  padding-bottom: 20px;
 }
 .searcher {
-  width: 50%;
+  width: 400px;
   box-sizing: border-box;
-  padding-left: 5%;
-  padding-right: 5%;
+  padding-left: 20px;
+  padding-right: 20px;
   font-size: 1rem;
-  height: 45px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  height: 40px;
+  border-radius: 10px;
   border: 0.5px solid rgb(101, 101, 101);
 }
-.order {
-  width: 40%;
-  height: 45px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+.exporter {
   box-sizing: border-box;
-  padding-left: 3%;
-  font-size: 1rem;
+  padding-left: 20px;
+  padding-right: 20px;
+  font-size: 0.9rem;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  background-color: #25a158;
+  color: #fff;
+}
+.order {
+  width: 300px;
+  height: 40px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  padding-left: 25px;
+  font-size: 0.9rem;
   border: 0.5px solid rgb(101, 101, 101);
 }
 .notadm {
@@ -658,7 +703,7 @@ nav >ul >li {
   justify-content: center;
   align-items: center;
 }
-.notadm >h4 {
+.notadm > h4 {
   text-align: center;
   font-family: "Lexend Exa", sans-serif;
   font-size: 1rem;
@@ -682,8 +727,7 @@ nav >ul >li {
 }
 .llnn:hover {
   background-color: var(--green);
-  color: white
-  ;
+  color: white;
 }
 .show22 {
   width: 100vw;
@@ -822,13 +866,13 @@ nav >ul >li {
   background-color: var(--green);
   color: white;
 }
-.infos1 >p {
+.infos1 > p {
   display: flex;
   width: 100%;
   justify-content: space-between;
   gap: 1%;
 }
-.infos1 >p> input {
+.infos1 > p > input {
   text-align: center;
   border-radius: 5px;
   border: 0.5px solid silver;
@@ -863,7 +907,7 @@ nav >ul >li {
   gap: 1.5vw;
 }
 .cetif-cards1 {
-  width: 49%;
+  width: 100%;
   box-sizing: border-box;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
@@ -871,7 +915,6 @@ nav >ul >li {
   background-color: var(--white);
   display: flex;
   flex-direction: column;
-  gap: 1.5vw;
 }
 .cetif-cards2 {
   width: 49%;
@@ -912,12 +955,12 @@ nav >ul >li {
   box-sizing: border-box;
   padding-right: 2%;
 }
-.llrr1 >div {
+.llrr1 > div {
   display: flex;
   width: 100%;
   justify-content: space-between;
 }
-.llrr1 >div > span {
+.llrr1 > div > span {
   font-size: 1rem;
 }
 #ddn {
@@ -1008,7 +1051,8 @@ nav >ul >li {
   gap: 1vw;
   padding: 5%;
   background-color: white;
-  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+    rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 }
 .ffg {
   width: 100%;
@@ -1016,7 +1060,7 @@ nav >ul >li {
   justify-content: center;
   gap: 3vw;
 }
-.jjs1 { 
+.jjs1 {
   width: 50%;
   color: var(--dark-blue);
 }
@@ -1027,7 +1071,7 @@ nav >ul >li {
 #kk3 {
   margin-top: 2vw;
 }
-.confirm{
+.confirm {
   width: 50%;
   height: 40px;
   background-color: var(--blue);
@@ -1052,6 +1096,7 @@ main {
   width: 100vw;
   box-sizing: border-box;
   padding: 2%;
+  padding-top: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1093,7 +1138,8 @@ aside {
   text-decoration: none;
   color: rgb(24, 24, 24);
   background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 .articlee2 {
   height: 100%;
@@ -1110,7 +1156,8 @@ aside {
   text-decoration: none;
   color: rgb(24, 24, 24);
   background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 .articlee3 {
   height: 100%;
@@ -1127,7 +1174,8 @@ aside {
   text-decoration: none;
   color: rgb(24, 24, 24);
   background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 .articlee4 {
   height: 100%;
@@ -1142,7 +1190,8 @@ aside {
   text-decoration: none;
   color: rgb(24, 24, 24);
   background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 .article1 {
   width: 50%;
@@ -1187,53 +1236,8 @@ aside {
   border-radius: 5px;
   background-color: rgba(192, 192, 192, 0.375);
 }
-.card-all {
-  width: 100%;
-  box-sizing: border-box;
-  background-color: white;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 5%;
-  border: 0.2px solid silver;
-  color: rgb(30, 30, 30);
-  font-size: 1rem;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-}
-.header2 {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-}
-.hd2 {
-  width: 40%;
-}
-.hd3 {
-  width: 35%;
-}
-.hd4 {
-  width: 20%;
-  padding-left: 2%;
-  border-radius: 5px;
-}
-#mm1 {
-  font-family: "Lexend Exa", sans-serif;
-  color: var(--blue);
-}
-.mmm1 {
-  color: #25a158;
-  width: 30%;
-  background-color: #25a15918;
-  border-radius: 5px;
-  padding-left: 5%;
-}
-.cct1 {
-  font-family: "Lexend Exa", sans-serif;
-  color: var(--green);
-  font-size: 1rem;
-}
 .main-container {
+  width: 100%;
   display: flex;
   box-sizing: border-box;
   justify-content: space-between;
@@ -1295,11 +1299,11 @@ aside {
   align-items: flex-end;
   color: var(--blue);
 }
-.name3 >h3 {
+.name3 > h3 {
   width: 66%;
   font-size: 1.2rem;
 }
-.name3 >span {
+.name3 > span {
   color: var(--green);
   font-size: 1.1rem;
 }
@@ -1308,7 +1312,7 @@ aside {
   display: flex;
   justify-content: space-between;
 }
-.pat-infos3 >div {
+.pat-infos3 > div {
   width: 35%;
 }
 .inf4 {
@@ -1330,7 +1334,7 @@ aside {
   font-size: 1rem;
   letter-spacing: 1px;
   height: 40px;
-  border: 1px solid var(--green); 
+  border: 1px solid var(--green);
   border-radius: 10px;
   background-color: white;
   transition: all 200ms;
@@ -1390,7 +1394,8 @@ aside {
   padding: 5%;
   height: 500px;
   gap: 2vw;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px,
+    rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
 }
 .grid2 {
   display: flex;
@@ -1404,7 +1409,8 @@ aside {
   height: 500px;
   transition: all 300ms;
   position: relative;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px,
+    rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
 }
 .grid2:hover {
   scale: 1.03;
@@ -1427,7 +1433,7 @@ aside {
   cursor: pointer;
   gap: 2vw;
 }
-.grid1 >button {
+.grid1 > button {
   width: 40%;
   height: 40px;
   font-size: 1rem;
@@ -1437,11 +1443,11 @@ aside {
   color: white;
   transition: all 300ms;
 }
-.grid1 >p {
+.grid1 > p {
   font-size: 0.9rem;
   text-align: center;
 }
-.grid1 >button:hover {
+.grid1 > button:hover {
   background-color: var(--green);
 }
 .llmm6 {
@@ -1456,7 +1462,7 @@ aside {
   object-fit: cover;
   border: 1px solid rgba(192, 192, 192, 0.221);
 }
-.grid2 >p {
+.grid2 > p {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -1567,4 +1573,69 @@ aside {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   text-align: center;
+}
+.titles446 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 45px;
+  background-color: #ffffff;
+  margin-top: 10px;
+  border: 0.5px solid silver;
+}
+.titles44 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 45px;
+  background-color: #dfdfdf;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  color: #08254a;
+  font-weight: bold;
+}
+.ddf1 {
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  text-align: center;
+  border-right: 1px solid silver;
+}
+.t1 {
+  width: 4%;
+}
+.t2 {
+  width: 10%;
+}
+.t3 {
+  width: 6%;
+}
+.t4 {
+  width: 6%;
+}
+.t5 {
+  width: 4%;
+}
+.t8 {
+  width: 12%;
+}
+.t10 {
+  width: 8%;
+}
+.t11 {
+  width: 7%;
+}
+.t12 {
+  width: 8%;
+}
+.t13 {
+  width: 7%;
+  border: none;
+}
+#dfjkgkj55 {
+  margin-left: 50px;
 }

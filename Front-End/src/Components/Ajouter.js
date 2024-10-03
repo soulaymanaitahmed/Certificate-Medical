@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { AutoComplete, Input } from "antd";
 
 function Ajouter(props) {
   axios.defaults.withCredentials = true;
@@ -18,19 +19,42 @@ function Ajouter(props) {
 
   const [current, setCurrent] = useState([]);
 
+  const [spds, setSpds] = useState([]);
+  const [mts, setMts] = useState([]);
+  const [provs, setProvs] = useState([]);
+  const [spdsInput, setSpdsInput] = useState("");
+  const [mtsInput, setMtsInput] = useState("");
+  const [provInput, setProvInput] = useState("");
+
   const [date_debut, setDate_debut] = useState("");
   const [date_depot, setDate_depot] = useState("");
   const [date_fin, setDate_fin] = useState("");
   const [contreVisit, setContreVisit] = useState("0");
   const [dateCV, setDateCV] = useState("");
-  const [fait, setFait] = useState("0");
+  const [fait, setFait] = useState("1");
   const [resultat, setResultat] = useState("0");
   const [explication, setExplication] = useState("0");
-  const [type, setType] = useState("1");
+  const [type, setType] = useState("10");
   const [duree, setDuree] = useState(null);
 
   const [error1, setError1] = useState("");
   const [confirm, setConfirm] = useState(false);
+
+  const handleSearch = (value) => {
+    return spds
+      .filter((spd) => spd.spd.toLowerCase().includes(value.toLowerCase()))
+      .map((spd) => ({ value: spd.spd }));
+  };
+  const handleSearch2 = (value) => {
+    return mts
+      .filter((m) => m.mt.toLowerCase().includes(value.toLowerCase()))
+      .map((m) => ({ value: m.mt }));
+  };
+  const handleSearch3 = (value) => {
+    return provs
+      .filter((m) => m.prov.toLowerCase().includes(value.toLowerCase()))
+      .map((m) => ({ value: m.prov }));
+  };
 
   useEffect(() => {
     if (date_debut && duree) {
@@ -45,6 +69,9 @@ function Ajouter(props) {
 
   useEffect(() => {
     fetchUserCertif();
+    fetchProvs();
+    fetchSpds();
+    fetchMts();
   }, []);
 
   function getOldestDateDebut(current) {
@@ -60,6 +87,30 @@ function Ajouter(props) {
 
   const oldestDateDebut = getOldestDateDebut(current);
 
+  const fetchSpds = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/spds`, {
+        withCredentials: true,
+      });
+      setSpds(response.data);
+    } catch (error) {}
+  };
+  const fetchMts = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/mts`, {
+        withCredentials: true,
+      });
+      setMts(response.data);
+    } catch (error) {}
+  };
+  const fetchProvs = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/provs`, {
+        withCredentials: true,
+      });
+      setProvs(response.data);
+    } catch (error) {}
+  };
   const fetchUserCertif = async () => {
     try {
       const response = await axios.get(`${baseURL}/certificate/${id}`, {
@@ -71,7 +122,6 @@ function Ajouter(props) {
       console.error("Error fetching patient:", error);
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const inputDate = new Date(date_debut);
@@ -90,6 +140,27 @@ function Ajouter(props) {
     }
 
     try {
+      if (
+        spdsInput &&
+        !spds.some((spd) => spd.spd.toLowerCase() === spdsInput.toLowerCase())
+      ) {
+        await axios.post(`${baseURL}/spds`, { spd: spdsInput });
+      }
+
+      if (
+        mtsInput &&
+        !mts.some((mt) => mt.mt.toLowerCase() === mtsInput.toLowerCase())
+      ) {
+        await axios.post(`${baseURL}/mts`, { mt: mtsInput });
+      }
+
+      if (
+        provInput &&
+        !provs.some((mt) => mt.prov.toLowerCase() === provInput.toLowerCase())
+      ) {
+        await axios.post(`${baseURL}/provs`, { prov: provInput });
+      }
+
       const response = await axios.post(`${baseURL}/certificate`, {
         patientId: id,
         created_by: id_user,
@@ -101,8 +172,12 @@ function Ajouter(props) {
         fait,
         resultat,
         explication,
-        type,
+        type: resultat !== "1" ? 10 : type,
         year,
+        spdsInput,
+        mtsInput,
+        provInput,
+        duree,
       });
       console.log("Form submitted successfully:", response.data);
       window.location.reload();
@@ -192,6 +267,18 @@ function Ajouter(props) {
               }}
             />
           </div>
+          <div className="inputdiv88" id="inputdiv88">
+            <label htmlFor="spm" className="label288">
+              Specialite medecin debut
+            </label>
+            <AutoComplete
+              options={handleSearch(spdsInput)}
+              onChange={setSpdsInput}
+              value={spdsInput}
+            >
+              <Input id="addInput88" className="addInput" />
+            </AutoComplete>
+          </div>
           {/* ------------------------- Details ------------------------- */}
           <div className="inputdiv">
             <div className="duree-cont1">
@@ -234,16 +321,16 @@ function Ajouter(props) {
                 Durée doit être supérieur ou égal à un jour!
               </span>
             </>
-          ) : duree && contreVisit === "1" && duree < 3 ? (
+          ) : duree && contreVisit === "1" && duree < 2 ? (
             <>
               <br />
               <span className="alert6">
                 Contre Visit ne peut être sélectionné que si la durée est
-                supérieure ou égale à 3 jours
+                supérieure ou égale à 2 jours
               </span>
             </>
           ) : null}
-          {contreVisit === "1" && duree >= 3 ? (
+          {contreVisit === "1" && duree >= 2 ? (
             <div className="sub">
               <div className="inputdiv">
                 <label htmlFor="datecv" className="label2">
@@ -262,6 +349,18 @@ function Ajouter(props) {
                     setDateCV(e.target.value);
                   }}
                 />
+              </div>
+              <div className="inputdiv88" id="inputdiv88">
+                <label htmlFor="spm" className="label288">
+                  Médecin traitant
+                </label>
+                <AutoComplete
+                  options={handleSearch2(mtsInput)}
+                  onChange={setMtsInput}
+                  value={mtsInput}
+                >
+                  <Input id="addInput88" className="addInput" />
+                </AutoComplete>
               </div>
               <div className="inputdiv" id="duree">
                 <div className="duree-cont1">
@@ -299,9 +398,9 @@ function Ajouter(props) {
               {fait === "1" ? (
                 <div className="sub">
                   <div className="inputdiv1" id="duree">
-                    <div className="duree-cont1">
+                    <div className="duree-cont1" id="ed4677">
                       <span className="qs">Résultat :</span>
-                      <div className="radio-inputs">
+                      <div className="radio-inputs" id="ed65780">
                         <label className="radio">
                           <input
                             type="radio"
@@ -328,56 +427,119 @@ function Ajouter(props) {
                           />
                           <span className="na">Non Justifier</span>
                         </label>
+                        <label className="radio">
+                          <input
+                            type="radio"
+                            name="resultat"
+                            value={2}
+                            checked={resultat === "2"}
+                            onChange={(e) => {
+                              setResultat(e.target.value);
+                            }}
+                            defaultChecked
+                          />
+                          <span className="na">Ne s'est Présinté</span>
+                        </label>
+                        <label className="radio">
+                          <input
+                            type="radio"
+                            name="resultat"
+                            value={3}
+                            checked={resultat === "3"}
+                            onChange={(e) => {
+                              setResultat(e.target.value);
+                            }}
+                            defaultChecked
+                          />
+                          <span className="na">Hors délai</span>
+                        </label>
                       </div>
                     </div>
                   </div>
                   {resultat === "1" ? (
-                    <div className="inputdiv1" id="duree">
-                      <div className="duree-cont1">
-                        <span className="qs">Type de Congé:</span>
-                        <div className="radio-inputs">
-                          <label className="radio">
-                            <input
-                              type="radio"
-                              name="type"
-                              value={1}
-                              checked={type === "1"}
-                              onChange={(e) => {
-                                setType(e.target.value);
-                              }}
-                              defaultChecked
-                            />
-                            <span className="na">Courte Période</span>
-                          </label>
-                          <label className="radio">
-                            <input
-                              type="radio"
-                              name="type"
-                              value={2}
-                              checked={type === "2"}
-                              onChange={(e) => {
-                                setType(e.target.value);
-                              }}
-                              defaultChecked
-                            />
-                            <span className="na">Période Intermédiaire</span>
-                          </label>
-                          <label className="radio">
-                            <input
-                              type="radio"
-                              name="type"
-                              value={3}
-                              checked={type === "3"}
-                              onChange={(e) => {
-                                setType(e.target.value);
-                              }}
-                              defaultChecked
-                            />
-                            <span className="na">Longue Période</span>
-                          </label>
+                    <>
+                      <div className="inputdiv88" id="inputdiv88">
+                        <span className="qs">Hors Province:</span>
+                        <AutoComplete
+                          options={handleSearch3(provInput)}
+                          onChange={setProvInput}
+                          value={provInput}
+                        >
+                          <Input id="addInput88" className="addInput" />
+                        </AutoComplete>
+                      </div>
+                      <br />
+                      <div className="inputdiv1" id="duree">
+                        <div className="duree-cont1" id="ed4677">
+                          <span className="qs">Type de Congé:</span>
+                          <div className="radio-inputs" id="ed65780">
+                            <label className="radio">
+                              <input
+                                type="radio"
+                                name="type"
+                                value={1}
+                                checked={type === "1"}
+                                onChange={(e) => {
+                                  setType(e.target.value);
+                                }}
+                                defaultChecked
+                              />
+                              <span className="na">Courte durée</span>
+                            </label>
+                            <label className="radio">
+                              <input
+                                type="radio"
+                                name="type"
+                                value={2}
+                                checked={type === "2"}
+                                onChange={(e) => {
+                                  setType(e.target.value);
+                                }}
+                                defaultChecked
+                              />
+                              <span className="na">Intermédiaire</span>
+                            </label>
+                            <label className="radio">
+                              <input
+                                type="radio"
+                                name="type"
+                                value={3}
+                                checked={type === "3"}
+                                onChange={(e) => {
+                                  setType(e.target.value);
+                                }}
+                                defaultChecked
+                              />
+                              <span className="na">Longue durée</span>
+                            </label>
+                            <label className="radio">
+                              <input
+                                type="radio"
+                                name="type"
+                                value={4}
+                                checked={type === "4"}
+                                onChange={(e) => {
+                                  setType(e.target.value);
+                                }}
+                              />
+                              <span className="na">Accident de travail</span>
+                            </label>
+                            <label className="radio">
+                              <input
+                                type="radio"
+                                name="type"
+                                value={5}
+                                checked={type === "5"}
+                                onChange={(e) => {
+                                  setType(e.target.value);
+                                }}
+                              />
+                              <span className="na">Dérogation</span>
+                            </label>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </>
                   ) : null}
                 </div>
               ) : fait === "0" ? (
@@ -461,7 +623,6 @@ function Ajouter(props) {
                   <span className="jjs1">Date : </span>
                   <span className="jjs2">{dateCV}</span>
                 </div>
-                {/* Additional fields for Contre Visit */}
                 <div className="ffg">
                   <span className="jjs1">Fait : </span>
                   <span className="jjs2">{fait === "1" ? "Oui" : "No"}</span>
@@ -471,7 +632,15 @@ function Ajouter(props) {
                     <div className="ffg">
                       <span className="jjs1">Résultat : </span>
                       <span className="jjs2">
-                        {resultat === "1" ? "Justifier" : "Non Justifier"}
+                        {resultat === "1"
+                          ? "Justifié"
+                          : resultat === "0"
+                          ? "Non Justifié"
+                          : resultat === "1"
+                          ? "Ne s'est Présenté"
+                          : resultat === "2"
+                          ? "Hors délai"
+                          : null}
                       </span>
                     </div>
                     {resultat === "1" ? (
@@ -479,11 +648,15 @@ function Ajouter(props) {
                         <span className="jjs1">Type de congé: </span>
                         <span className="jjs2">
                           {type === "1"
-                            ? "Courte Période"
+                            ? "Courte Durée"
                             : type === "2"
-                            ? "Intermédiaire"
+                            ? "Durée Intermédiaire"
                             : type === "3"
-                            ? "Longue Période"
+                            ? "Longue Durée"
+                            : type === "4"
+                            ? "Accident de travail"
+                            : type === "5"
+                            ? "Dérogation"
                             : null}
                         </span>
                       </div>

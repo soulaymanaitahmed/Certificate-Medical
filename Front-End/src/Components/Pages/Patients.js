@@ -40,6 +40,7 @@ function Patients() {
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [cin, setCin] = useState("");
+  const [ppr, setPpr] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [search, setSearch] = useState("");
@@ -79,7 +80,7 @@ function Patients() {
     event.preventDefault();
     try {
       const id = specificPatient.id;
-      const updatedUserData = { nom, prenom, address, cin, phone };
+      const updatedUserData = { nom, prenom, address, cin, ppr, phone };
       await axios.put(`${baseURL}/patients/${id}`, updatedUserData);
       fetchPatients();
       setAction(1);
@@ -96,6 +97,7 @@ function Patients() {
       item.prenom.toLowerCase().includes(search.toLowerCase()) ||
       item.address.toLowerCase().includes(search.toLowerCase()) ||
       item.cin.toLowerCase().includes(search.toLowerCase()) ||
+      item.ppr.toLowerCase().includes(search.toLowerCase()) ||
       item.phone.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -144,6 +146,7 @@ function Patients() {
                       setPrenom(patient.prenom);
                       setAddress(patient.address);
                       setCin(patient.cin);
+                      setPpr(patient.ppr);
                       setPhone(patient.phone);
                     }}
                     onDoubleClick={() => {
@@ -314,6 +317,21 @@ function Patients() {
                     CIN
                   </label>
                 </div>
+                <div className="inputdiv">
+                  <input
+                    required
+                    className="addInput"
+                    id="ppr"
+                    name="ppr"
+                    type="text"
+                    placeholder=""
+                    value={ppr}
+                    onChange={(e) => setPpr(e.target.value)}
+                  />
+                  <label htmlFor="ppr" className="label">
+                    PPR
+                  </label>
+                </div>
                 {cinExists && <p className="allert">CIN existe déjà</p>}
                 <div className="inputdiv">
                   <input
@@ -339,6 +357,7 @@ function Patients() {
                       setPrenom("");
                       setAddress("");
                       setCin("");
+                      setPpr("");
                       setPhone("");
                       setSpecificPatient(null);
                     }}
@@ -355,6 +374,7 @@ function Patients() {
                       setPrenom("");
                       setAddress("");
                       setCin("");
+                      setPpr("");
                       setPhone("");
                       setSpecificPatient(null);
                     }}

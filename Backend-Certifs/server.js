@@ -37,6 +37,7 @@ app.use(
     },
   })
 );
+
 const db = mysql.createConnection({
   host: "localhost",
   port: 4406,
@@ -196,24 +197,34 @@ app.post("/certificate", vuser, (req, res) => {
     type,
     created_by,
     year,
+    spdsInput,
+    mtsInput,
+    provInput,
+    duree,
   } = req.body;
+
   const insertCertificateQuery = `
-  INSERT INTO certificates (
-    patient_id, 
-    date_depot, 
-    date_debut, 
-    date_fin, 
-    contre_visit, 
-    date_cv, 
-    fait, 
-    resultat, 
-    explication, 
-    type_conge, 
-    created_by,
-    year
-  )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`;
+    INSERT INTO certificates (
+      patient_id, 
+      date_depot, 
+      date_debut, 
+      date_fin, 
+      contre_visit, 
+      date_cv, 
+      fait, 
+      resultat, 
+      explication, 
+      type_conge, 
+      created_by,
+      year,
+      spd,
+      mt,
+      prov,
+      duration
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
   const values = [
     patientId,
     date_depot,
@@ -227,11 +238,16 @@ app.post("/certificate", vuser, (req, res) => {
     type,
     created_by,
     year,
+    spdsInput,
+    mtsInput,
+    provInput,
+    duree,
   ];
+
   db.query(insertCertificateQuery, values, (err, result) => {
     if (err) {
       console.error("Error adding Certificate:", err);
-      return res.json({ error: "Error adding Certificate" });
+      return res.status(500).json({ error: "Error adding Certificate" });
     }
     console.log("Certificate added successfully");
     return res.json({ message: "Certificate added successfully" });
@@ -239,7 +255,17 @@ app.post("/certificate", vuser, (req, res) => {
 });
 app.put("/certificate/:id", vuser, (req, res) => {
   const { id } = req.params;
-  const { contreVisit, dateCV, fait, resultat, explication, type } = req.body;
+  const {
+    contreVisit,
+    dateCV,
+    fait,
+    resultat,
+    explication,
+    type,
+    spdsInput,
+    mtsInput,
+    provInput,
+  } = req.body;
   const dateCVValue = contreVisit === "0" ? null : dateCV;
   const sql = `
         UPDATE certificates 
@@ -249,7 +275,10 @@ app.put("/certificate/:id", vuser, (req, res) => {
         fait = ?,
         resultat = ?,
         explication = ?,
-        type_conge = ?
+        type_conge = ?,
+        spd = ?,
+        mt = ?,
+        prov = ?
         WHERE id = ?
       `;
   const values = [
@@ -259,9 +288,11 @@ app.put("/certificate/:id", vuser, (req, res) => {
     resultat,
     explication,
     type,
+    spdsInput,
+    mtsInput,
+    provInput,
     id,
   ];
-
   db.query(sql, values, (err, result) => {
     if (err) {
       console.error("Error updating Certificate:", err);
@@ -278,13 +309,6 @@ app.get("/certificate/", vuser, (req, res) => {
     return res.json(data);
   });
 });
-app.get("/certificate/", vuser, (req, res) => {
-  const sql = "SELECT * FROM certificates";
-  db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
-  });
-});
 app.get("/certificate-all", vuser, (req, res) => {
   const sql = `
     SELECT 
@@ -292,7 +316,9 @@ app.get("/certificate-all", vuser, (req, res) => {
       p.nom AS patient_nom,
       p.prenom AS patient_prenom,
       p.address AS patient_address,
+      p.address AS patient_address,
       p.cin AS patient_cin,
+      p.ppr AS patient_ppr,
       p.phone AS patient_phone,
       p.created_date AS patient_created_date
     FROM certificates c
@@ -306,16 +332,34 @@ app.get("/certificate-all", vuser, (req, res) => {
 app.get("/certificate/:id", vuser, (req, res) => {
   const { id } = req.params;
   const { annee } = req.query;
-  let sql = "SELECT * FROM certificates WHERE patient_id = ?";
+
+  let sql = `
+    SELECT 
+      c.*, 
+      p.nom AS patient_nom, 
+      p.prenom AS patient_prenom, 
+      p.address AS patient_address, 
+      p.cin AS patient_cin, 
+      p.ppr AS patient_ppr, 
+      p.phone AS patient_phone, 
+      p.created_date AS patient_created_date 
+    FROM certificates c 
+    INNER JOIN patients p ON c.patient_id = p.id 
+    WHERE c.patient_id = ?
+  `;
+
   let params = [id];
 
   if (annee && annee !== "*") {
-    sql += " AND year = ?";
+    sql += " AND YEAR(c.date_debut) = ?";
     params.push(annee);
   }
 
   db.query(sql, params, (err, data) => {
-    if (err) return res.json(err);
+    if (err) {
+      console.error("Error fetching certificate data:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
     return res.json(data);
   });
 });
@@ -373,7 +417,7 @@ app.get("/patient/:id", vuser, (req, res) => {
   });
 });
 app.post("/patient", vuser, (req, res) => {
-  const { nom, prenom, adress, cin, phone } = req.body;
+  const { nom, prenom, adress, cin, ppr, phone } = req.body;
 
   const checkPatientQuery = `
     SELECT * FROM patients WHERE nom = ? AND prenom = ?
@@ -387,10 +431,10 @@ app.post("/patient", vuser, (req, res) => {
       return res.json({ error: "Patient already exists" });
     } else {
       const insertPatientQuery = `
-        INSERT INTO patients (nom, prenom, adress, cin, phone)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO patients (nom, prenom, adress, cin, ppr, phone)
+        VALUES (?, ?, ?, ?, ?, ?)
       `;
-      const values = [nom, prenom, adress, cin, phone];
+      const values = [nom, prenom, adress, cin, ppr, phone];
       db.query(insertPatientQuery, values, (err, result) => {
         if (err) {
           console.error("Error adding Patient:", err);
@@ -403,7 +447,7 @@ app.post("/patient", vuser, (req, res) => {
   });
 });
 app.post("/patients", vuser, (req, res) => {
-  const { nom, prenom, address, cin, phone } = req.body;
+  const { nom, prenom, address, cin, ppr, phone } = req.body;
   const checkUsernameQuery = `
     SELECT * FROM patients WHERE nom = ? AND prenom = ?
   `;
@@ -416,10 +460,10 @@ app.post("/patients", vuser, (req, res) => {
       return res.json({ error: "Patient already exists" });
     } else {
       const insertUserQuery = `
-        INSERT INTO patients (nom, prenom, address, cin, phone)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO patients (nom, prenom, address, cin, ppr, phone)
+        VALUES (?, ?, ?, ?, ?, ?)
       `;
-      const values = [nom, prenom, address, cin, phone];
+      const values = [nom, prenom, address, cin, ppr, phone];
       db.query(insertUserQuery, values, (err, result) => {
         if (err) {
           console.error("Error adding Patient 4:", err);
@@ -433,8 +477,7 @@ app.post("/patients", vuser, (req, res) => {
 });
 app.put("/patients/:id", vuser, (req, res) => {
   const { id } = req.params;
-  const { nom, prenom, address, cin, phone } = req.body;
-
+  const { nom, prenom, address, cin, ppr, phone } = req.body;
   db.query(
     "SELECT * FROM patients WHERE cin = ? AND id != ?",
     [cin, id],
@@ -453,10 +496,11 @@ app.put("/patients/:id", vuser, (req, res) => {
           prenom = ?,
           address = ?,
           cin = ?,
+          ppr = ?,
           phone = ?
         WHERE id = ?
       `;
-      const values = [nom, prenom, address, cin, phone, id];
+      const values = [nom, prenom, address, cin, ppr, phone, id];
 
       db.query(sql, values, (err, result) => {
         if (err) {
@@ -478,6 +522,68 @@ app.delete("/patients/:id", vuser, isAdmin, (req, res) => {
       message: "Patient deleted successfully",
       affectedRows: result.affectedRows,
     });
+  });
+});
+
+// ---------------------------- Patient ----------------------------------------------------
+app.get("/spds", vuser, (req, res) => {
+  const sql = "SELECT * FROM spds";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+app.get("/mts", vuser, (req, res) => {
+  const sql = "SELECT * FROM mts";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+app.get("/provs", vuser, (req, res) => {
+  const sql = "SELECT * FROM provs";
+  db.query(sql, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+app.post("/spds", vuser, (req, res) => {
+  const { spd } = req.body;
+  const sql = "INSERT INTO spds (spd) VALUES (?)";
+  db.query(sql, [spd], (err, result) => {
+    if (err) {
+      console.error("Error adding spd:", err);
+      return res.status(500).json({ error: "Error adding spd" });
+    }
+    res
+      .status(201)
+      .json({ message: "SPD added successfully", id: result.insertId });
+  });
+});
+app.post("/mts", vuser, (req, res) => {
+  const { mt } = req.body;
+  const sql = "INSERT INTO mts (mt) VALUES (?)";
+  db.query(sql, [mt], (err, result) => {
+    if (err) {
+      console.error("Error adding mt:", err);
+      return res.status(500).json({ error: "Error adding mt" });
+    }
+    res
+      .status(201)
+      .json({ message: "MT added successfully", id: result.insertId });
+  });
+});
+app.post("/provs", vuser, (req, res) => {
+  const { prov } = req.body;
+  const sql = "INSERT INTO provs (prov) VALUES (?)";
+  db.query(sql, [prov], (err, result) => {
+    if (err) {
+      console.error("Error adding prov:", err);
+      return res.status(500).json({ error: "Error adding prov" });
+    }
+    res
+      .status(201)
+      .json({ message: "Prov added successfully", id: result.insertId });
   });
 });
 

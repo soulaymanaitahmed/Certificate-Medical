@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-import { HiUserCircle } from "react-icons/hi";
-import { HiOutlineExternalLink } from "react-icons/hi";
-
 import Header from "../Header";
 import img1 from "../Images/crowd.png";
 import img2 from "../Images/certification.png";
@@ -12,6 +9,8 @@ import img4 from "../Images/alert-sign.png";
 import img5 from "../Images/repeat.png";
 import img6 from "../Images/clock.png";
 import load from "../Images/loading.gif";
+
+import exportToExcel from "../exportToExcel";
 
 function Home() {
   axios.defaults.withCredentials = true;
@@ -185,36 +184,13 @@ function Home() {
     indexOfFirstCertCard,
     indexOfLastCertCard
   );
-  const totalCertPages = Math.ceil(orderedCertifAll.length / certCardsPerPage);
-  const handleCertNextPage = () => {
-    setCurrentCertPage(currentCertPage + 1);
-  };
-  const handleCertPrevPage = () => {
-    setCurrentCertPage(currentCertPage - 1);
-  };
-
-  // -------------------------------------------------- Navigation Patients
-  const [currentPatPage, setCurrentPatPage] = useState(1);
-  const [patCardsPerPage] = useState(8);
-  const indexOfLastPatCard = currentPatPage * patCardsPerPage;
-  const indexOfFirstPatCard = indexOfLastPatCard - patCardsPerPage;
-  const currentPatCards = orderedPatiefAll.slice(
-    indexOfFirstPatCard,
-    indexOfLastPatCard
-  );
-  const totalPatPages = Math.ceil(orderedPatiefAll.length / patCardsPerPage);
-  const handlePatNextPage = () => {
-    setCurrentPatPage(currentPatPage + 1);
-  };
-  const handlePatPrevPage = () => {
-    setCurrentPatPage(currentPatPage - 1);
-  };
-
   // -------------------------------------------------- Over 90 days
   const patientsWith90DaysOrMore = patientsWithCertifCount.filter(
     (patient) => patient.total_days >= 90
   );
   const numberOfPatientsWith90DaysOrMore = patientsWith90DaysOrMore.length;
+
+  console.log(currentCertCards);
 
   if (loading) {
     return (
@@ -296,181 +272,86 @@ function Home() {
                   <option value="5">Trier par Durée</option>
                   <option value="4">Durée (Descendant)</option>
                 </select>
+                <button
+                  className="exporter"
+                  onClick={() => exportToExcel(currentCertCards)}
+                >
+                  Exporter au format Excel
+                </button>
               </div>
               <hr />
-              {currentCertCards.map((card, index) => {
-                const dd = new Date(card.date_fin) >= currentDate;
+              <br />
+              <div className="titles44">
+                <p className="ddf1 t1">N°</p>
+                <p className="ddf1 t2">Nom & Prenom</p>
+                <p className="ddf1 t3">Date</p>
+                <p className="ddf1 t4">CIN / PPR</p>
+                <p className="ddf1 t5">Durée</p>
+                <p className="ddf1 t3">Du</p>
+                <p className="ddf1 t3">Au</p>
+                <p className="ddf1 t8">Specialite medecin debut</p>
+                <p className="ddf1 t8">Médecin traitant</p>
+                <p className="ddf1 t10">Resultat de la commission</p>
+                <p className="ddf1 t11">Type</p>
+                <p className="ddf1 t12">Administration</p>
+                <p className="ddf1 t13">Hors province</p>
+              </div>
+              {currentCertCards.map((m) => {
+                const dd = new Date(m.date_fin) >= currentDate;
                 return (
                   <div
-                    className="card-all"
-                    key={index}
+                    className="titles446"
+                    key={m.id}
                     style={
                       dd === true
                         ? {
                             border: "1px solid #25a158",
-                            backgroundColor: "#25a15918",
                           }
                         : {}
                     }
                   >
-                    <div className="header2">
-                      <span className="mmm1" id="mm1">
-                        N° : {card.id}
-                      </span>
-                      <span
-                        className="hd2"
-                        id="mm1"
-                        style={{
-                          color: "#406eac",
-                          width: "50%",
-                          backgroundColor: "#406fac23",
-                          borderRadius: "5px",
-                          paddingLeft: "5%",
-                        }}
-                      >
-                        {card.patient_nom + " - " + card.patient_prenom}
-                      </span>
-                    </div>
-                    <hr />
-                    <div className="header2">
-                      <span className="hd3">
-                        Date début :{" "}
-                        <span id="mm1">{formatDate(card.date_debut)}</span>
-                      </span>
-                      <span className="hd3">
-                        Date fin :{" "}
-                        <span id="mm1">{formatDate(card.date_fin)}</span>
-                      </span>
-                      <span className="hd4">
-                        Durée :{" "}
-                        <span className="cct1">
-                          {calculateDaysDifference(
-                            card.date_debut,
-                            card.date_fin
-                          )}
-                        </span>
-                      </span>
-                    </div>
-                    <div className="header2">
-                      <span>
-                        Mode contre visit :{" "}
-                        <span id="mm1">
-                          {card.contre_visit === 1 ? "Oui" : "No"}
-                        </span>
-                      </span>
-                      <span>
-                        Address : <span id="mm1">{card.patient_address}</span>
-                      </span>
-                      <span>
-                        Phone : <span id="mm1">{card.patient_phone}</span>
-                      </span>
-                    </div>
+                    <p className="ddf1 t1">{m.id}</p>
+                    <p className="ddf1 t2">
+                      {m.patient_nom + " " + m.patient_prenom}
+                    </p>
+                    <p className="ddf1 t3">{formatDate(m.date_depot)}</p>
+                    <p className="ddf1 t4">
+                      {m.patient_ppr ? m.patient_ppr : m.patient_cin}
+                    </p>
+                    <p className="ddf1 t5">{m.duration}</p>
+                    <p className="ddf1 t3">{formatDate(m.date_debut)}</p>
+                    <p className="ddf1 t3">{formatDate(m.date_fin)}</p>
+                    <p className="ddf1 t8">{m.spd ? m.spd : "- - -"}</p>
+                    <p className="ddf1 t8">{m.mt ? m.mt : "- - -"}</p>
+                    <p className="ddf1 t10">
+                      {m.resultat === 1
+                        ? "Justifié"
+                        : m.resultat === 0
+                        ? "Non Justifié"
+                        : m.resultat === 2
+                        ? "Ne s'est Présenté"
+                        : m.resultat === 3
+                        ? "Hors délai"
+                        : "?"}
+                    </p>
+                    <p className="ddf1 t11">
+                      {m.type_conge === 1
+                        ? "Courte Durée"
+                        : m.type_conge === 2
+                        ? "Durée Intermédiaire"
+                        : m.type_conge === 3
+                        ? "Longue Durée"
+                        : m.type_conge === 4
+                        ? "Accident de travail"
+                        : m.type_conge === 5
+                        ? "Dérogation"
+                        : "- - -"}
+                    </p>
+                    <p className="ddf1 t12">{m.patient_address}</p>
+                    <p className="ddf1 t13">{m.prov ? m.prov : "- - -"}</p>
                   </div>
                 );
               })}
-              <div className="pagination">
-                <button
-                  onClick={handleCertPrevPage}
-                  disabled={currentCertPage === 1}
-                >
-                  Précédente
-                </button>
-                <span>
-                  Page {currentCertPage} of {totalCertPages}
-                </span>
-                <button
-                  onClick={handleCertNextPage}
-                  disabled={currentCertPage === totalCertPages}
-                >
-                  Suivante
-                </button>
-              </div>
-            </div>
-            <div className="cetif-cards2">
-              <div className="search">
-                <input
-                  className="searcher"
-                  placeholder="Recherche"
-                  type="text"
-                  value={search2}
-                  onChange={(e) => {
-                    setSearch2(e.target.value);
-                  }}
-                />
-                <select
-                  name="order2"
-                  className="order"
-                  value={order2}
-                  onChange={(e) => setOrder2(e.target.value)}
-                >
-                  <option value="1">Trier par Total</option>
-                  <option value="2">Nombre de certificats</option>
-                  <option value="3">Trier par Nom</option>
-                  <option value="4">Trier par Address</option>
-                </select>
-              </div>
-              <hr />
-              {currentPatCards.map((pat, index) => {
-                return (
-                  <div
-                    className="patients-all"
-                    key={index}
-                    style={
-                      pat.total_days >= 90
-                        ? {
-                            backgroundColor: "rgba(255, 0, 0, 0.107)",
-                            border: "0.5px solid red",
-                          }
-                        : {}
-                    }
-                  >
-                    <Link to={`/add/${pat?.id}`} className="llnk3">
-                      {pat.nbr_certifs}
-                      <HiOutlineExternalLink />
-                    </Link>
-                    <div className="img-contt">
-                      <HiUserCircle className="img3" />
-                    </div>
-                    <div className="infos3">
-                      <div className="name3">
-                        <h3>{pat.nom + " - " + pat.prenom}</h3>
-                        <span>{"Total : " + pat.total_days + " Jours"}</span>
-                      </div>
-                      <div className="pat-infos3">
-                        <div className="inf35">
-                          <span className="inf4">Address : </span>
-                          <span className="inf5">{pat.address}</span>
-                        </div>
-                        <div className="inf36">
-                          <span className="inf4">Phone : </span>
-                          <span className="inf5">{pat.phone}</span>
-                        </div>
-                        <div className="inf37">
-                          <span className="inf4">CIN : </span>
-                          <span className="inf5">{pat.cin}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              <div className="pagination">
-                <button
-                  onClick={handlePatPrevPage}
-                  disabled={currentPatPage === 1}
-                >
-                  Suivante
-                </button>
-                <span>
-                  Page {currentPatPage} of {totalPatPages}
-                </span>
-                <button
-                  onClick={handlePatNextPage}
-                  disabled={currentPatPage === totalPatPages}
-                >
-                  Suivante
-                </button>
-              </div>
             </div>
           </div>
         </main>
