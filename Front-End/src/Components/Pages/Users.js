@@ -67,7 +67,6 @@ function App() {
       await axios.delete(`${baseURL}/users/${id}`);
       fetchUsers();
       setSpecificUser(null);
-      console.log("User Deleted");
     } catch (error) {
       console.error("Error deleting user:", error);
     }
@@ -82,7 +81,6 @@ function App() {
       fetchUsers();
       setAction(1);
       setSpecificUser(null);
-      console.log("User Updated");
     } catch (error) {
       setUsernameExists(true);
     }

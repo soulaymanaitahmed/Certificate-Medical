@@ -50,7 +50,7 @@ const exportToExcel = async (data) => {
         ? "Ne s'est Présenté"
         : m.resultat === 3
         ? "Hors délai"
-        : "?",
+        : "- - -",
       type_conge: contreVisitNull
         ? "- - -"
         : m.type_conge === 1
@@ -93,7 +93,7 @@ const exportToExcel = async (data) => {
     });
 
     // Set row height (x2)
-    row.height = 30; // Adjust height as needed, default is usually around 15
+    row.height = 45; // Adjust height as needed, default is usually around 15
   });
 
   // Generate buffer

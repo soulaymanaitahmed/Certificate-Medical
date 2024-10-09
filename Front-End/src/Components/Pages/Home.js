@@ -14,6 +14,9 @@ import exportToExcel from "../exportToExcel";
 
 function Home() {
   axios.defaults.withCredentials = true;
+  const currentYear = new Date().getFullYear();
+  const [annee, setAnnee] = useState(currentYear);
+
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const getBaseURL = () => {
@@ -42,6 +45,7 @@ function Home() {
 
   const [patients, setPatients] = useState([]);
   const [certifs, setCertifs] = useState([]);
+  const [yesrsUsers, setYesrsUsers] = useState([]);
 
   const [search, setSearch] = useState("");
   const [search2, setSearch2] = useState("");
@@ -51,8 +55,11 @@ function Home() {
 
   useEffect(() => {
     fetchPatients();
-    fetchCertificates();
+    fetchAllyears();
   }, []);
+  useEffect(() => {
+    fetchCertificates();
+  }, [annee]);
 
   const fetchPatients = async () => {
     try {
@@ -62,14 +69,25 @@ function Home() {
       setPatients(response.data);
     } catch (error) {}
   };
-
   const fetchCertificates = async () => {
     try {
       const response = await axios.get(`${baseURL}/certificate-all`, {
+        params: { annee },
         withCredentials: true,
       });
       setCertifs(response.data);
     } catch (error) {}
+  };
+  const fetchAllyears = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/certificate-years`, {
+        params: { annee },
+        withCredentials: true,
+      });
+      setYesrsUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching Years:", error);
+    }
   };
 
   // -------------------------------------------------- Calcul numbre of Active Certifs
@@ -190,8 +208,6 @@ function Home() {
   );
   const numberOfPatientsWith90DaysOrMore = patientsWith90DaysOrMore.length;
 
-  console.log(currentCertCards);
-
   if (loading) {
     return (
       <div className="loading">
@@ -208,44 +224,39 @@ function Home() {
             <div className="articlee2">
               <div className="titre">
                 <span>Certificates</span>
+                <span className="value">{certifs.length}</span>
                 <img src={img2} alt="Icon" className="icon1" />
               </div>
-              <span className="value">{certifs.length}</span>
             </div>
             <div className="articlee4">
               <div className="titre">
                 <span>Actif</span>
+                <span className="value">{count}</span>
                 <img src={img5} alt="Icon" className="icon1" />
               </div>
-              <span className="value">{count}</span>
             </div>
             <div className="articlee3" id="vvbb6">
               <div className="titre">
                 <span>Non Actif</span>
+                <span className="value">{certifs.length - count}</span>
                 <img src={img6} alt="Icon" className="icon1" />
               </div>
-              <span className="value">{certifs.length - count}</span>
             </div>
             <Link to="/patients" className="articlee1">
               <div className="titre">
                 <span>Patients</span>
+                <span className="value">{patients.length}</span>
                 <img src={img1} alt="Icon" className="icon1" />
               </div>
-              <span className="value">{patients.length}</span>
             </Link>
             <div className="articlee1">
               <div className="titre">
                 <span>Décision</span>
+                <span className="value">
+                  {numberOfPatientsWith90DaysOrMore}
+                </span>
                 <img src={img4} alt="Icon" className="icon1" />
               </div>
-              <span className="value">{numberOfPatientsWith90DaysOrMore}</span>
-            </div>
-            <div className="articlee1">
-              <div className="titre">
-                <span>Test</span>
-                <img src={""} alt="Icon" className="icon1" />
-              </div>
-              <span className="value">{"--"}</span>
             </div>
           </aside>
           <div className="main-container">
@@ -260,6 +271,22 @@ function Home() {
                     setSearch(e.target.value);
                   }}
                 />
+                <select
+                  id="hhbjt33"
+                  className="date123"
+                  onChange={(e) => setAnnee(e.target.value)}
+                >
+                  <option value={"*"}>Toute</option>
+                  {yesrsUsers.map((yr, index) => (
+                    <option
+                      key={index}
+                      value={yr.year}
+                      selected={yr.year === annee}
+                    >
+                      {yr.year}
+                    </option>
+                  ))}
+                </select>
                 <select
                   name="order1"
                   className="order"
@@ -332,7 +359,7 @@ function Home() {
                         ? "Ne s'est Présenté"
                         : m.resultat === 3
                         ? "Hors délai"
-                        : "?"}
+                        : "- - -"}
                     </p>
                     <p className="ddf1 t11">
                       {m.type_conge === 1

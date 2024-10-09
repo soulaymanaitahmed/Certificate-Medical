@@ -32,7 +32,6 @@ function Patient() {
         },
       });
       if (response.data.message) {
-        console.log("Patient added successfully");
         window.location.reload();
       } else {
         console.error("Error:", response.data.error);

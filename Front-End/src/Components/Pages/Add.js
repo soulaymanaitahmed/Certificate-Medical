@@ -73,7 +73,7 @@ function Add() {
   const [fait, setFait] = useState("");
   const [resultat, setResultat] = useState("");
   const [explication, setExplication] = useState("");
-  const [type, setType] = useState("10");
+  const [type, setType] = useState("");
   const [duree, setDuree] = useState(null);
   const [view, setView] = useState(0);
 
@@ -241,37 +241,38 @@ function Add() {
       ) {
         await axios.post(`${baseURL}/spds`, { spd: spdsInput });
       }
-
       if (
         mtsInput &&
         !mts.some((mt) => mt.mt.toLowerCase() === mtsInput.toLowerCase())
       ) {
         await axios.post(`${baseURL}/mts`, { mt: mtsInput });
       }
-
       if (
         provInput &&
-        !provs.some((mt) => mt.prov.toLowerCase() === provInput.toLowerCase())
+        !provs.some(
+          (prov) => prov.prov.toLowerCase() === provInput.toLowerCase()
+        )
       ) {
         await axios.post(`${baseURL}/provs`, { prov: provInput });
       }
-
       const id = spesificCertif.id;
       const updatedUserData = {
         contreVisit,
-        dateCV,
-        fait,
-        resultat,
-        explication,
-        type: resultat !== "1" ? 10 : type,
+        dateCV: contreVisit === "0" ? null : dateCV,
+        fait: contreVisit === "0" ? null : fait,
+        resultat: contreVisit === "0" || fait === "0" ? null : resultat,
+        explication: contreVisit === "0" || fait === "1" ? null : explication,
+        type:
+          resultat !== "1" || contreVisit === "0" || fait === "0" ? null : type,
         spdsInput,
-        mtsInput,
-        provInput,
+        mtsInput: contreVisit === "0" ? null : mtsInput,
+        provInput:
+          contreVisit === "0" || resultat !== "1" || fait === "0"
+            ? null
+            : provInput,
       };
-
       await axios.put(`${baseURL}/certificate/${id}`, updatedUserData);
       window.location.reload();
-      console.log("Certif Updated");
     } catch (error) {
       console.error("Error updating certif:", error);
     }
@@ -341,8 +342,6 @@ function Add() {
       setProvs(response.data);
     } catch (error) {}
   };
-
-  console.log(userCertif);
 
   if (loading) {
     return (
@@ -1048,6 +1047,7 @@ function Add() {
                       id="dfjkgkj55"
                       className="exporter"
                       onClick={() => exportToExcel(userCertif)}
+                      disabled={userCertif.length === 0}
                     >
                       Exporter au format Excel
                     </button>
@@ -1074,21 +1074,13 @@ function Add() {
                               setMtsInput(specificCertif.mt || "");
                               setProvInput(specificCertif.prov || "");
                               setContreVisit(
-                                specificCertif.contre_visit.toString()
+                                specificCertif.contre_visit || "0"
                               );
                               setDateCV(specificCertif.date_cv);
-                              setFait(specificCertif.fait.toString());
-                              setResultat(specificCertif.resultat.toString());
-                              setExplication(
-                                specificCertif.explication.toString()
-                              );
-                              setType(specificCertif.type_conge.toString());
-                              const dt1 = new Date(specificCertif.date_debut);
-                              const dt2 = new Date(specificCertif.date_fin);
-                              const daysDifference = calculateDaysDifference(
-                                dt2,
-                                dt1
-                              );
+                              setFait(specificCertif.fait || "0");
+                              setResultat(specificCertif.resultat);
+                              setExplication(specificCertif.explication);
+                              setType(specificCertif.type_conge);
                             }
                           }}
                           style={

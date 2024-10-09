@@ -27,7 +27,6 @@ function User() {
       });
 
       if (response.data.message) {
-        console.log("User added successfully");
         window.location.reload();
       } else {
         console.error("Error:", response.data.error);

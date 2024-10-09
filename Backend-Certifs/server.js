@@ -222,7 +222,7 @@ app.post("/certificate", vuser, (req, res) => {
       prov,
       duration
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -232,15 +232,15 @@ app.post("/certificate", vuser, (req, res) => {
     date_fin,
     contreVisit,
     dateCV || null,
-    fait,
-    resultat,
-    explication,
-    type,
+    fait || null,
+    resultat || null,
+    explication || null,
+    type || null,
     created_by,
     year,
-    spdsInput,
-    mtsInput,
-    provInput,
+    spdsInput || null,
+    mtsInput || null,
+    provInput || null,
     duree,
   ];
 
@@ -266,6 +266,7 @@ app.put("/certificate/:id", vuser, (req, res) => {
     mtsInput,
     provInput,
   } = req.body;
+
   const dateCVValue = contreVisit === "0" ? null : dateCV;
   const sql = `
         UPDATE certificates 
@@ -283,16 +284,17 @@ app.put("/certificate/:id", vuser, (req, res) => {
       `;
   const values = [
     contreVisit,
-    dateCVValue,
-    fait,
-    resultat,
-    explication,
-    type,
-    spdsInput,
-    mtsInput,
-    provInput,
+    dateCVValue || null,
+    fait || null,
+    resultat || null,
+    explication || null,
+    type || null,
+    spdsInput || null,
+    mtsInput || null,
+    provInput || null,
     id,
   ];
+
   db.query(sql, values, (err, result) => {
     if (err) {
       console.error("Error updating Certificate:", err);
@@ -310,21 +312,26 @@ app.get("/certificate/", vuser, (req, res) => {
   });
 });
 app.get("/certificate-all", vuser, (req, res) => {
+  const { annee } = req.query; // Get the 'annee' parameter from query
+
   const sql = `
-    SELECT 
-      c.*, 
-      p.nom AS patient_nom,
-      p.prenom AS patient_prenom,
-      p.address AS patient_address,
-      p.address AS patient_address,
-      p.cin AS patient_cin,
-      p.ppr AS patient_ppr,
-      p.phone AS patient_phone,
-      p.created_date AS patient_created_date
-    FROM certificates c
-    INNER JOIN patients p ON c.patient_id = p.id
+      SELECT 
+          c.*, 
+          p.nom AS patient_nom,
+          p.prenom AS patient_prenom,
+          p.address AS patient_address,
+          p.cin AS patient_cin,
+          p.ppr AS patient_ppr,
+          p.phone AS patient_phone,
+          p.created_date AS patient_created_date
+      FROM certificates c
+      INNER JOIN patients p ON c.patient_id = p.id
+      ${annee === "*" ? "" : "WHERE c.year = ?"}
   `;
-  db.query(sql, (err, data) => {
+
+  const params = annee === "*" ? [] : [annee]; // No params if selecting all
+
+  db.query(sql, params, (err, data) => {
     if (err) return res.json(err);
     return res.json(data);
   });
@@ -366,10 +373,18 @@ app.get("/certificate/:id", vuser, (req, res) => {
 app.get("/certificate-years/:id", vuser, (req, res) => {
   const { id } = req.params;
   const sql =
-    "SELECT DISTINCT year FROM certificates WHERE patient_id = ? ORDER BY year ASC";
+    "SELECT DISTINCT year FROM certificates WHERE patient_id = ? ORDER BY year DESC";
   const params = [id];
 
   db.query(sql, params, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+app.get("/certificate-years", vuser, (req, res) => {
+  const sql = "SELECT DISTINCT year FROM certificates ORDER BY year DESC";
+
+  db.query(sql, (err, data) => {
     if (err) return res.json(err);
     return res.json(data);
   });
@@ -384,6 +399,21 @@ app.get("/certificate-active/:id", vuser, (req, res) => {
     if (err) return res.json(err);
     return res.json(data);
   });
+});
+const alterColumnsSQL = `
+ALTER TABLE certificates 
+MODIFY contre_visit VARCHAR(255),
+MODIFY fait VARCHAR(255),
+MODIFY resultat VARCHAR(255),
+MODIFY explication VARCHAR(255),
+MODIFY type_conge VARCHAR(255);
+`;
+db.query(alterColumnsSQL, (err, result) => {
+  if (err) {
+    console.error("Error altering columns:", err);
+  } else {
+    console.log("Columns altered successfully:", result);
+  }
 });
 app.delete("/certificate/:id", vuser, isAdmin, (req, res) => {
   const userId = req.params.id;

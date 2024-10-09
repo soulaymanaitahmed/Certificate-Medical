@@ -35,7 +35,6 @@ function AjouterImg(props) {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Image uploaded successfully:", response.data);
       window.location.reload();
     } catch (error) {
       console.error("Error uploading image:", error);

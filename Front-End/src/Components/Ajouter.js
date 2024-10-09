@@ -32,10 +32,10 @@ function Ajouter(props) {
   const [contreVisit, setContreVisit] = useState("0");
   const [dateCV, setDateCV] = useState("");
   const [fait, setFait] = useState("1");
-  const [resultat, setResultat] = useState("0");
-  const [explication, setExplication] = useState("0");
-  const [type, setType] = useState("10");
-  const [duree, setDuree] = useState(null);
+  const [resultat, setResultat] = useState("");
+  const [explication, setExplication] = useState("");
+  const [type, setType] = useState("");
+  const [duree, setDuree] = useState(0);
 
   const [error1, setError1] = useState("");
   const [confirm, setConfirm] = useState(false);
@@ -128,6 +128,7 @@ function Ajouter(props) {
     const oldestDate = new Date(oldestDateDebut);
     const oneYearLater = new Date(oldestDate);
     oneYearLater.setFullYear(oldestDate.getFullYear() + 1);
+
     let year;
     if (
       oldestDateDebut &&
@@ -146,45 +147,49 @@ function Ajouter(props) {
       ) {
         await axios.post(`${baseURL}/spds`, { spd: spdsInput });
       }
-
       if (
         mtsInput &&
         !mts.some((mt) => mt.mt.toLowerCase() === mtsInput.toLowerCase())
       ) {
         await axios.post(`${baseURL}/mts`, { mt: mtsInput });
       }
-
       if (
         provInput &&
-        !provs.some((mt) => mt.prov.toLowerCase() === provInput.toLowerCase())
+        !provs.some(
+          (prov) => prov.prov.toLowerCase() === provInput.toLowerCase()
+        )
       ) {
         await axios.post(`${baseURL}/provs`, { prov: provInput });
       }
-
-      const response = await axios.post(`${baseURL}/certificate`, {
+      const requestData = {
         patientId: id,
         created_by: id_user,
         date_debut,
         date_depot,
         date_fin,
         contreVisit,
-        dateCV,
-        fait,
-        resultat,
-        explication,
-        type: resultat !== "1" ? 10 : type,
+        dateCV: contreVisit === "0" ? null : dateCV,
+        fait: contreVisit === "0" ? null : fait,
+        resultat: contreVisit === "0" || fait === "0" ? null : resultat,
+        explication: contreVisit === "0" || fait === "1" ? null : explication,
+        type:
+          resultat !== "1" || contreVisit === "0" || fait === "0" ? null : type,
         year,
         spdsInput,
-        mtsInput,
-        provInput,
+        mtsInput: contreVisit === "0" ? null : mtsInput,
+        provInput:
+          contreVisit === "0" || resultat !== "1" || fait === "0"
+            ? null
+            : provInput,
         duree,
-      });
-      console.log("Form submitted successfully:", response.data);
+      };
+      const response = await axios.post(`${baseURL}/certificate`, requestData);
       window.location.reload();
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
+
   const handleCheckRequired = () => {
     if (!date_debut || !date_depot || !date_fin) {
       setError1("S'il-vous-plaît remplissez tous les champs requis.");

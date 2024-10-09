@@ -579,31 +579,15 @@ nav > ul > li {
   padding: 3%;
   background-color: var(--white);
 }
-.patient-card {
-  width: 30%;
-  min-height: 150px;
+.patient-show1 {
+  width: 60%;
   box-sizing: border-box;
-  overflow: hidden;
   display: flex;
-  align-items: flex-start;
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 2%;
-  padding-top: 80px;
   flex-direction: column;
-  background-color: white;
-  border-radius: 10px;
-  gap: 0.3vw;
-  position: relative;
-  cursor: pointer;
-  transition: 300ms;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-}
-.patient-card:hover {
-  transform: scale(1.03);
-}
-.patient-card:active {
-  transform: scale(1.03);
+  gap: 15px;
+  border-radius: 15px;
+  padding: 3%;
+  background-color: var(--white);
 }
 .pat-img {
   width: 30%;
@@ -614,7 +598,7 @@ nav > ul > li {
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 .namee {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--dark-blue);
   font-weight: bold;
   margin-bottom: 0.7vw;
@@ -627,12 +611,12 @@ nav > ul > li {
 }
 .ll {
   padding-left: 10%;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   color: var(--blue);
 }
 .lo {
   color: rgb(95, 95, 95);
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 .create {
   width: 100%;
@@ -673,6 +657,20 @@ nav > ul > li {
   border-radius: 10px;
   border: 0.5px solid rgb(101, 101, 101);
 }
+.vie442 {
+  height: 40px;
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 0.5px solid #1859ad;
+}
+.lffg22 {
+  font-size: 1.3rem;
+  color: #1859ad;
+}
 .exporter {
   box-sizing: border-box;
   padding-left: 20px;
@@ -683,6 +681,10 @@ nav > ul > li {
   border: none;
   background-color: #25a158;
   color: #fff;
+}
+.exporter:disabled {
+  cursor: no-drop;
+  background-color: rgba(0, 87, 0, 0.511);
 }
 .order {
   width: 300px;
@@ -916,6 +918,10 @@ nav > ul > li {
   display: flex;
   flex-direction: column;
 }
+.titles446:last-child {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
 .cetif-cards2 {
   width: 49%;
   box-sizing: border-box;
@@ -1114,7 +1120,7 @@ main {
 }
 aside {
   width: 100%;
-  height: 150px;
+  height: 100px;
   box-sizing: border-box;
   background-color: var(--white);
   padding: 1%;
@@ -1126,15 +1132,14 @@ aside {
 }
 .articlee1 {
   height: 100%;
-  width: 15%;
+  width: 18%;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   border-radius: 20px;
-  gap: 20%;
-  padding: 1%;
+  padding: 20px;
   text-decoration: none;
   color: rgb(24, 24, 24);
   background-color: white;
@@ -1143,7 +1148,7 @@ aside {
 }
 .articlee2 {
   height: 100%;
-  width: 15%;
+  width: 18%;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
@@ -1151,8 +1156,7 @@ aside {
   flex-direction: column;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
-  gap: 20%;
-  padding: 1%;
+  padding: 20px;
   text-decoration: none;
   color: rgb(24, 24, 24);
   background-color: white;
@@ -1161,7 +1165,7 @@ aside {
 }
 .articlee3 {
   height: 100%;
-  width: 15%;
+  width: 18%;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
@@ -1170,7 +1174,7 @@ aside {
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   gap: 30%;
-  padding: 1%;
+  padding: 20px;
   text-decoration: none;
   color: rgb(24, 24, 24);
   background-color: white;
@@ -1179,14 +1183,14 @@ aside {
 }
 .articlee4 {
   height: 100%;
-  width: 15%;
+  width: 18%;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   gap: 30%;
-  padding: 1%;
+  padding: 20px;
   text-decoration: none;
   color: rgb(24, 24, 24);
   background-color: white;
@@ -1194,32 +1198,35 @@ aside {
     rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 .article1 {
-  width: 50%;
+  width: 18%;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  gap: 20%;
+  padding: 20px;
 }
 .titre {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  gap: 2vw;
+  align-items: center;
 }
 .icon1 {
-  width: 2.5vw;
+  width: 2vw;
 }
 .value {
-  font-size: 1.8rem;
+  font-size: 1.2rem;
+  height: 30px;
   color: #25a158;
-  width: 80%;
+  width: 60px;
   letter-spacing: 2px;
   background-color: #25a15918;
   border-radius: 5px;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .value2 {
   font-size: 1rem;
@@ -1574,6 +1581,10 @@ aside {
   border-bottom-right-radius: 5px;
   text-align: center;
 }
+#hhbjt33 {
+  border-radius: 10px;
+  border: 0.5px solid rgb(101, 101, 101);
+}
 .titles446 {
   width: 100%;
   display: flex;
@@ -1638,4 +1649,79 @@ aside {
 }
 #dfjkgkj55 {
   margin-left: 50px;
+}
+.pat-card {
+  width: 32%;
+  height: 170px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  cursor: pointer;
+  transition: scale 300ms;
+}
+.pat-card:hover {
+  scale: 1.02;
+}
+#card-selected {
+  border: 3px solid #1859ad;
+}
+.full-nom1 {
+  width: 100%;
+}
+.nom1 {
+  font-size: 1rem;
+  color: #1859ad;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.adress1 {
+  font-size: 1rem;
+  color: #005700;
+}
+.all-info1 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.all-info2 {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.lab1 {
+  color: #4d0000;
+  font-size: 0.85rem;
+}
+.datainfo1 {
+  font-size: 0.95rem;
+  color: #004349;
+}
+.with1 {
+  width: 100%;
+  height: 60px;
+  flex-direction: row;
+}
+.info1 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.info2 {
+  width: 130px;
+}
+.wh33 {
+  width: 40%;
+}
+#bord22 {
+  border-left: 1px solid silver;
+  border-right: 1px solid silver;
+  margin-right: 10px;
+  padding-left: 10px;
 }

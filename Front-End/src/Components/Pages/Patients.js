@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 import axios from "axios";
 
 import Header from "../Header";
 import Patient from "../Patient";
-import PatientImg from "../Images/user.png";
 import load from "../Images/loading.png";
+
+import { BsGridFill } from "react-icons/bs";
+import { FaList } from "react-icons/fa";
 
 function Patients() {
   axios.defaults.withCredentials = true;
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [viewl, setViewl] = useState(() => {
+    const savedViewl = Cookies.get("viewl");
+    return savedViewl === "true";
+  });
 
   const getBaseURL = () => {
     const { protocol, hostname } = window.location;
@@ -97,9 +104,15 @@ function Patients() {
       item.prenom.toLowerCase().includes(search.toLowerCase()) ||
       item.address.toLowerCase().includes(search.toLowerCase()) ||
       item.cin.toLowerCase().includes(search.toLowerCase()) ||
-      item.ppr.toLowerCase().includes(search.toLowerCase()) ||
+      item.ppr.toString().includes(search) ||
       item.phone.toLowerCase().includes(search.toLowerCase())
   );
+
+  useEffect(() => {
+    Cookies.set("viewl", viewl, { expires: 7 });
+  }, [viewl]);
+
+  console.log(filteredPatients);
 
   if (loading) {
     return (
@@ -114,7 +127,7 @@ function Patients() {
         <Header />
         <div className="app">
           <div className="show">
-            <div className="patient-show">
+            <div className={viewl ? "patient-show" : "patient-show1"}>
               <div className="search">
                 <input
                   className="searcher"
@@ -125,124 +138,79 @@ function Patients() {
                     setSearch(e.target.value);
                   }}
                 />
+                <button onClick={() => setViewl(!viewl)} className="vie442">
+                  {viewl ? (
+                    <FaList className="lffg22" />
+                  ) : (
+                    <BsGridFill className="lffg22" />
+                  )}
+                </button>
               </div>
-              {filteredPatients.map((patient) => {
+              {filteredPatients.map((pt) => {
                 return (
                   <div
-                    className="patient-card"
-                    id="kk"
-                    style={
+                    className={viewl ? "pat-card" : "pat-card with1"}
+                    key={pt.id}
+                    id={
                       specificPatient !== null
-                        ? patient.id === specificPatient.id
-                          ? { backgroundColor: "#406eac" }
-                          : {}
-                        : {}
+                        ? pt.id === specificPatient.id
+                          ? "card-selected"
+                          : null
+                        : null
                     }
-                    key={patient.id}
                     onClick={() => {
-                      setSpecificPatient(patient);
+                      setSpecificPatient(pt);
                       setAction(2);
-                      setNom(patient.nom);
-                      setPrenom(patient.prenom);
-                      setAddress(patient.address);
-                      setCin(patient.cin);
-                      setPpr(patient.ppr);
-                      setPhone(patient.phone);
+                      setNom(pt.nom);
+                      setPrenom(pt.prenom);
+                      setAddress(pt.address);
+                      setCin(pt.cin);
+                      setPpr(pt.ppr);
+                      setPhone(pt.phone);
                     }}
                     onDoubleClick={() => {
-                      window.location.href = `/add/${specificPatient?.id}`;
+                      window.location.href = `/add/${pt?.id}`;
                     }}
                   >
-                    <img
-                      className="pat-img"
-                      src={PatientImg}
-                      alt="Avatar-img"
-                    />
-                    <span
-                      className="namee"
-                      style={
-                        specificPatient !== null
-                          ? patient.id === specificPatient.id
-                            ? { color: "white" }
-                            : {}
-                          : {}
-                      }
-                    >
-                      {patient.prenom} - {patient.nom}
-                    </span>
-                    <div className="infos">
-                      <span
-                        className="lo"
-                        style={
-                          specificPatient !== null
-                            ? patient.id === specificPatient.id
-                              ? { color: "rgb(223, 223, 223)" }
-                              : {}
-                            : {}
-                        }
+                    <div className="full-nom1">
+                      <span className="nom1">{pt.nom + " " + pt.prenom}</span>
+                      {viewl ? null : (
+                        <span className="adress1">{"- " + pt.address}</span>
+                      )}
+                    </div>
+                    {viewl ? (
+                      <span className="adress1">{pt.address}</span>
+                    ) : null}
+                    <div className={viewl ? "all-info2" : "all-info1"}>
+                      <div className={viewl ? "info1" : "info2"}>
+                        <span className="lab1">PPR:</span>{" "}
+                        <span
+                          className={viewl ? "datainfo1 wh33" : "datainfo1"}
+                        >
+                          {pt.ppr}
+                        </span>
+                      </div>
+                      <div
+                        className={viewl ? "info1" : "info2"}
+                        id={viewl ? null : "bord22"}
                       >
-                        Address :
-                      </span>
-                      <span
-                        className="ll"
-                        style={
-                          specificPatient !== null
-                            ? patient.id === specificPatient.id
-                              ? { color: "white" }
-                              : {}
-                            : {}
-                        }
-                      >
-                        {patient.address}
-                      </span>
-                      <span
-                        className="lo"
-                        style={
-                          specificPatient !== null
-                            ? patient.id === specificPatient.id
-                              ? { color: "rgb(223, 223, 223)" }
-                              : {}
-                            : {}
-                        }
-                      >
-                        CIN :
-                      </span>
-                      <span
-                        className="ll"
-                        style={
-                          specificPatient !== null
-                            ? patient.id === specificPatient.id
-                              ? { color: "white" }
-                              : {}
-                            : {}
-                        }
-                      >
-                        {patient.cin}
-                      </span>
-                      <span
-                        className="lo"
-                        style={
-                          specificPatient !== null
-                            ? patient.id === specificPatient.id
-                              ? { color: "rgb(223, 223, 223)" }
-                              : {}
-                            : {}
-                        }
-                      >
-                        Phone :
-                      </span>
-                      <span
-                        className="ll"
-                        style={
-                          specificPatient !== null
-                            ? patient.id === specificPatient.id
-                              ? { color: "white" }
-                              : {}
-                            : {}
-                        }
-                      >
-                        {patient.phone}
-                      </span>
+                        <span className="lab1">
+                          N° {viewl ? "telephone" : null}:
+                        </span>{" "}
+                        <span
+                          className={viewl ? "datainfo1 wh33" : "datainfo1"}
+                        >
+                          {pt.phone}
+                        </span>
+                      </div>
+                      <div className={viewl ? "info1" : "info2"}>
+                        <span className="lab1">CIN:</span>{" "}
+                        <span
+                          className={viewl ? "datainfo1 wh33" : "datainfo1"}
+                        >
+                          {pt.cin ? pt.cin : "- - -"}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 );
